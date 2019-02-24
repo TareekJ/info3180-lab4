@@ -9,6 +9,8 @@ from app import app
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
 from .forms import UploadForm
+from app import Allowed_uploads
+
 
 
 ###
@@ -51,6 +53,27 @@ def upload():
             return redirect(url_for('home'))
 
     return render_template('upload.html', uploadForm = uploadForm)
+    
+    
+@app.route('/app/static/uploads')
+def send_images(filename):
+    return send_from_directory('/app/static/uploads', filename)
+
+@app.route('/files')
+def files():
+    image_names=os.listdir('./app/static/uploads')
+    return render_template("files.html", image_names=image_names)
+
+
+
+def get_uploaded_images():
+    upload = []
+    L_file = os.listdir('./app/static/uploads/')
+    for file in L_file:
+            if file.split('.')[-1] in Allowed_uploads:
+                upload.append(file)
+    return upload
+    
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
